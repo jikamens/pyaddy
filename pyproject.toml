@@ -11,6 +11,7 @@ homepage = "https://github.com/msaldivar/pyaddy"
 python = "^3.11"
 requests = "^2.31.0"
 click = "^8.1.7"
+platformdirs = "^4.3.6"
 
 
 [tool.poetry.group.dev.dependencies]

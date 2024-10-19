@@ -3,14 +3,29 @@ Class to handle writing and reading the addy api key
 
 """
 import os
+import platformdirs
 
 
 class AddyKey:
     def __init__(self) -> None:
         filename = "addy_key.cfg"
-        dir_path = os.path.dirname(os.path.abspath(__file__))
+        files_to_check = [os.path.join(dir_path, filename)
+                          for dir_path in self._dirs()]
+        for full_path in files_to_check:
+            if os.path.exists(full_path):
+                self.full_path = full_path
+        else:
+            self.full_path = files_to_check[0]
+        os.makedirs(os.path.dirname(self.full_path), exist_ok=True)
 
-        self.full_path = os.path.join(dir_path, filename)
+    def _dirs(self) -> list[str]:
+        """Returns possible dirs for config file, most to least preferred
+
+        Storing the config file in the same location as this source file is
+        supported for backward compatibility but should eventually be removed.
+        """
+        return (platformdirs.user_config_dir("addy"),
+                os.path.dirname(os.path.abspath(__file__)))
 
     def write_to_config(self, key) -> None:
         with open(self.full_path, "w") as f:
