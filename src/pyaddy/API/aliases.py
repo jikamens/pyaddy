@@ -12,12 +12,16 @@ class Aliases:
         self.url = AddyURL()
         self.api_key = AddyKey().load_key()
 
-    def get_all_aliases(self, params: dict) -> dict:
-        """Get all ACTIVE aliases SORTED by CREATED_AT"""
+    def get_aliases_page(self, params: dict, page: int=1) -> dict:
+        """Get a page of ACTIVE aliases SORTED by CREATED_AT"""
+
+        params = params.copy()
+        if page != 1:
+            params["page[number]"] = page
 
         response = requests.request(
             "GET",
-            self.url.get_all_aliases(),
+            self.url.get_aliases(),
             headers=self.url.get_headers(self.api_key),
             params=params,
         )

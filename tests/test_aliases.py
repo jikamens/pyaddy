@@ -7,13 +7,13 @@ class TestAliases(unittest.TestCase):
         """Test class setup"""
         self.aliases = Aliases()
 
-    def test_get_all_aliases(self):
-        """Test getting all ACTIVE aliases SORTED by CREATED_AT"""
+    def test_get_aliases_page(self):
+        """Test getting a page of ACTIVE aliases SORTED by CREATED_AT"""
         params = {
             'filter[active]': 'true',
             'sort': '-created_at',
         }
-        resp = self.aliases.get_all_aliases(params)
+        resp = self.aliases.get_aliases_page(params)
         details = resp.json()
         
         assert resp.status_code == 200, f'Getting alll aliases did not return 200: {resp.status_code}'

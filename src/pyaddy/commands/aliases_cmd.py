@@ -35,13 +35,21 @@ def get_all_aliases(only_ids):
         "sort": "-created_at",
     }
 
-    resp = Aliases().get_all_aliases(params)
+    resp = Aliases().get_aliases_page(params)
+    resp_json = resp.json()
+    data = resp_json["data"]
+    while resp_json["meta"]["current_page"] < resp_json["meta"]["last_page"]:
+        resp = Aliases().get_aliases_page(
+            params, page=resp_json["meta"]["current_page"]+1)
+        resp_json = resp.json()
+        data += resp_json["data"]
+
     if only_ids:
         click.echo("Alias IDs:")
-        [click.echo(aliases["id"] + ",", nl=False) for aliases in resp.json()["data"]]
+        [click.echo(aliases["id"] + ",", nl=False) for aliases in data]
         click.echo()
     else:
-        click.echo(f"All Aliases: \n {json.dumps(resp.json(), indent=4)}")
+        click.echo(f"All Aliases: \n {json.dumps(data, indent=4)}")
 
 
 @alias.command("get", short_help="Get ID details")

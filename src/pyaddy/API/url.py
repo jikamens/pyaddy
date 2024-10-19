@@ -53,7 +53,7 @@ class AddyURL:
     def bulk_update_recipients_for_aliases(self) -> str:
         return self.base_url.format("aliases/recipients/bulk")
 
-    def get_all_aliases(self) -> str:
+    def get_aliases(self) -> str:
         return self.base_url.format("aliases")
 
     def get_specific_alias(self) -> str:
