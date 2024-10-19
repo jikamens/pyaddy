@@ -5,6 +5,7 @@ Click cmds for the AddyApiDetails class
 
 import click
 import json
+from pyaddy.API import _maybe_raw
 from pyaddy.API.api_details import AddyApiDetails
 
 
@@ -14,16 +15,18 @@ def api():
 
 
 @api.command(name="api-details")
-def check_api_key_details():
+@click.pass_context
+def check_api_key_details(ctx):
     """Check the details of the api key"""
     resp = AddyApiDetails().get_api_details()
 
-    click.echo(f"API details: {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, "API details:", json.dumps(resp.json(), indent=4))
 
 
 @api.command(name="account-details")
-def get_account_details():
+@click.pass_context
+def get_account_details(ctx):
     """Get all account details associated with api key"""
     resp = AddyApiDetails().get_account_details()
 
-    click.echo(f"Account Details: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, "Account Details:", json.dumps(resp.json(), indent=4))

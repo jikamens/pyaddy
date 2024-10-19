@@ -4,6 +4,7 @@ Click cmds for the Aliases class
 
 import click
 import json
+from pyaddy.API import _maybe_raw
 from pyaddy.API.aliases import Aliases
 
 
@@ -19,14 +20,16 @@ def alias():
     short_help="Get details about all ACTIVE aliases SORTED by CREATED_AT. OPTION: --only-ids",
 )
 @click.option("--only-ids", help="only show IDs", is_flag=True)
-def get_all_aliases(only_ids):
+@click.pass_context
+def get_all_aliases(ctx, only_ids):
     """Get all aliases
 
-    Default: Get all ACTIVE aliases SORTED by CREATED_AT:\n
-    Usage:\n
+    Default: Get all ACTIVE aliases SORTED by CREATED_AT:
 
-    addy alias get-all\n
-    addy alias get-all --only-ids
+    Usage:
+
+    addy [--raw] alias get-all
+    addy [--raw] alias get-all --only-ids
     """
 
     # TODO: look into filter options
@@ -45,24 +48,25 @@ def get_all_aliases(only_ids):
         data += resp_json["data"]
 
     if only_ids:
-        click.echo("Alias IDs:")
-        [click.echo(aliases["id"] + ",", nl=False) for aliases in data]
-        click.echo()
+        _maybe_raw(ctx, "Alias IDs:",
+                   (",".join(aliases["id"] for aliases in data)))
     else:
-        click.echo(f"All Aliases: \n {json.dumps(data, indent=4)}")
+        _maybe_raw(ctx, "All Aliases:", json.dumps(data, indent=4))
 
 
 @alias.command("get", short_help="Get ID details")
 @click.argument("id")
-def get_specific_alias(id):
+@click.pass_context
+def get_specific_alias(ctx, id):
     """Get ID details
 
-    Usage:\n
-    addy alias get UUID
+    Usage:
+
+    addy [--raw] alias get UUID
     """
 
     resp = Aliases().get_specific_alias(id)
-    click.echo(f"Alias Info: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, "Alias Info:", json.dumps(resp.json(), indent=4))
 
 
 @alias.command(name="new", short_help="Create a new alias. --help for all options")
@@ -87,13 +91,14 @@ def get_specific_alias(id):
     help="recipient id to add. Default recipient will be used if non is provided",
     type=str,
 )
-def create_new_alias(domain, description, format, recipient_id):
+@click.pass_context
+def create_new_alias(ctx, domain, description, format, recipient_id):
     """Create a new alias
 
-    Usage:\n
-    addy alias new
+    Usage:
 
-    addy alias new --domain addymail.com --description "addy created" --format random_words
+    addy [--raw] alias new
+    addy [--raw] alias new --domain addymail.com --description "addy created" --format random_words
     """
 
     payload = {
@@ -104,7 +109,8 @@ def create_new_alias(domain, description, format, recipient_id):
     }
 
     resp = Aliases().create_new_alias(payload)
-    click.echo(f"Create New Alias Info: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, "Create New Alias Info:",
+               json.dumps(resp.json(), indent=4))
 
 
 @alias.command(name="update", short_help='Update alias "descprition" and "from_name"')
@@ -119,32 +125,36 @@ def create_new_alias(domain, description, format, recipient_id):
     help='Updated FROM_NAME: NOTE: put string in quotes "Leonardo T." Default: Leonardo T.',
     default="Lenoardo T.",
 )
-def update_specific_alias(id, description, from_name):
+@click.pass_context
+def update_specific_alias(ctx, id, description, from_name):
     """Update alias "descprition" and "from_name"
 
-    Usage:\n
+    Usage:
 
-    addy alias update UUID --description "foo addy" --from-name "bar addy"
-
+    addy [--raw] alias update UUID --description "foo addy" --from-name "bar addy"
     """
 
     payload = {"description": description, "from_me": from_name}
 
     resp = Aliases().update_specific_alias(id, payload)
-    click.echo(f"Updated {id} Info: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, f"Updated {id} Info:",
+               json.dumps(resp.json(), indent=4))
 
 
 @alias.command(name="restore", short_help="Restore alias ID")
 @click.argument("id")
-def restore_deleted_alias(id):
+@click.pass_context
+def restore_deleted_alias(ctx, id):
     """Restore an alias ID
 
-    Usage:\n
-    addy alias restore UUID
+    Usage:
+
+    addy [--raw] alias restore UUID
     """
 
     resp = Aliases().restore_specific_alias(id)
-    click.echo(f"Restored {id} Info: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, f"Restored {id} Info:",
+               json.dumps(resp.json(), indent=4))
 
 
 @alias.command(name="delete", short_help="Delete alias ID")
@@ -152,7 +162,8 @@ def restore_deleted_alias(id):
 def delete_specific_alias(id):
     """Delete an alias ID
 
-    Usage:\n
+    Usage:
+
     addy alias delete UUID
     """
 
@@ -175,16 +186,19 @@ def forget_specific_alias(id):
 
 @alias.command(name="activate", short_help="Activate alias ID")
 @click.argument("id")
-def activate_alias(id):
+@click.pass_context
+def activate_alias(ctx, id):
     """Activate an alias ID
 
-    Usage:\n
-    addy alias activate UUID
+    Usage:
+
+    addy [--raw] alias activate UUID
     """
 
     payload = {"id": id}
     resp = Aliases().activate_alias(payload)
-    click.echo(f"Activated {id} Info: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, f"Activated {id} Info:",
+               json.dumps(resp.json(), indent=4))
 
 
 @alias.command(name="deactivate", short_help="Deactivate alias ID")

@@ -4,6 +4,7 @@ Click cmds for the Domain class
 
 import click
 import json
+from pyaddy.API import _maybe_raw
 from pyaddy.API.domain import Domain
 
 @click.group()
@@ -15,44 +16,52 @@ def domain():
 
 @domain.command(name="all-options",
                 short_help="retrieves all domain options")
-def get_all_domain_options():
+@click.pass_context
+def get_all_domain_options(ctx):
     """Retrieve all domain options"""
 
     resp = Domain().get_all_domain_options()
-    click.echo(f"All Domain Options: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, "All Domain Options:",
+               json.dumps(resp.json(), indent=4))
+
 
 @domain.command(name="all",
                 short_help="retrieves all domains")
-def get_all_domains():
+@click.pass_context
+def get_all_domains(ctx):
     """Retrieve all domains"""
 
     resp = Domain().get_all_domains()
-    click.echo(f"All Domains: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, "All Domains:", json.dumps(resp.json(), indent=4))
 
 @domain.command(name="get",
                 short_help="get details of a specific domain ID")
 @click.argument("id")
-def get_specific_domain(id):
+@click.pass_context
+def get_specific_domain(ctx, id):
     """Get the details of a specific domain id
     
-    Usage: \n
-    addy domain get 0ad7a75a-1517-4b86-bb8a-9443d4965e60
+    Usage:
+
+    addy [--raw] domain get 0ad7a75a-1517-4b86-bb8a-9443d4965e60
     """
 
     resp = Domain().get_specific_domain(id)
-    click.echo(f"All Domains: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, "All Domains:", json.dumps(resp.json(), indent=4))
 
 
 @domain.command(name="create-new",
                 short_help="create a new domain with the given NAME")
 @click.argument("name")
-def create_new_domain(name: str):
+@click.pass_context
+def create_new_domain(ctx, name: str):
     """Create a new domain with the given NAME
 
-    Usage: \n
-    addy domain create-new example.com
+    Usage:
+
+    addy [--raw] domain create-new example.com
     """
 
     payload = {"domain": name}
     resp = Domain().create_new_domain(payload)
-    click.echo(f"Created Domain: \n {json.dumps(resp.json(), indent=4)}")
+    _maybe_raw(ctx, "Created Domain:", json.dumps(resp.json(), indent=4))

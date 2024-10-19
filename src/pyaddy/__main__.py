@@ -23,7 +23,8 @@ class CliGroup(click.Group):
 
 @click.group(cls=CliGroup)
 @click.version_option("0.5.5", prog_name="Addy CLI")
-def cli():
+@click.option("--raw", help="Only output data, no headers", is_flag=True)
+def cli(raw):
     """CLI tool to interact with addy.io api:\n
 
     Run load_key first to add api key:
