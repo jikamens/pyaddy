@@ -12,6 +12,7 @@ python = "^3.11"
 requests = "^2.31.0"
 click = "^8.1.7"
 platformdirs = "^4.3.6"
+certifi = "^2026.10.19"
 
 
 [tool.poetry.group.dev.dependencies]
